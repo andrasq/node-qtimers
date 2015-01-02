@@ -1,0 +1,29 @@
+{
+  "name": "qtimers",
+  "version": "0.1.0",
+  "description": "very fast setImmediate, setTimeout, etc replacements",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/andrasq/node-qtimers"
+  },
+  "main": "index.js",
+  "author": {
+    "name": "Andras",
+    "url": "http://github.com/andrasq"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "scripts": {
+    "test": "nodeunit"
+  },
+  "keywords": [
+    "Andras",
+    "quick",
+    "fast",
+    "setImmediate",
+    "setTimeout",
+    "setInterval"
+  ]
+}
