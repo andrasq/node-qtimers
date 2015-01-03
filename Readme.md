@@ -163,7 +163,7 @@ functions is no worse than having multiple timers time out together.
 TODO
 ----
 
-- refactor into a singleton for testability
-- unit tests
+- refactor into a singleton for better testability
 - tune setTimeout
 - track down why node-v0.11.13 is slower than v0.10.29
+- allow sub-millisecond resolution timeouts and intervals (1/10 ms, say)

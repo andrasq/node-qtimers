@@ -1,3 +1,5 @@
+assert = require('assert');
+
 var timers = require('../index');
 timers.install();
 
@@ -10,8 +12,13 @@ module.exports = {
     },
 
     'setImmediate': {
+        'should expose maxTickDepth': function(t) {
+            t.equal('number', typeof setImmediate.maxTickDepth);
+            t.done();
+        },
+
         'should return immediateObject': function(t) {
-            t.equal('object', typeof(setImmediate(function(){})));
+            t.equal('object', typeof setImmediate(function(){}));
             t.done();
         },
 
@@ -24,9 +31,9 @@ module.exports = {
         },
 
         'should not invoke callback if cleared': function(t) {
-            var im = setImmediate(function(){ throw new Error("should not get called") });
-            clearImmediate(im);
             t.expect(1);
+            var im = setImmediate(function(){ t.ok(0); throw new Error("should not get called") });
+            clearImmediate(im);
             setImmediate(function(){ t.ok(1); t.done(); });
         },
 
@@ -55,5 +62,95 @@ module.exports = {
             t.expect(1);
             for (i=0; i<ncalls; i++) setImmediate(function() { --ncalls; if (ncalls === 0) { t.ok(1); t.done(); } });
         }
+    },
+
+    'setTimeout': {
+        'should expose MIN_TIMEOUT': function(t) {
+            t.equal('number', typeof setTimeout.MIN_TIMEOUT);
+            t.done();
+        },
+
+        'should expose MAX_TIMEOUT': function(t) {
+            t.equal('number', typeof setTimeout.MAX_TIMEOUT);
+            t.done();
+        },
+
+        'should return timeoutObject': function(t) {
+            t.equal('object', typeof setTimeout(function doneTimeout(){ t.done() }, 1));
+        },
+
+        'should invoke callback': function(t) {
+            t.expect(1);
+            setTimeout(function doneInvokeCallback(){ t.ok(1); t.done(); }, 1);
+        },
+
+        'should invoke callback only once': function(t) {
+            t.expect(1);
+            setTimeout(function(){ t.ok(1); }, 1);
+            setTimeout(function(){ t.done(); }, 5);
+        },
+
+        'should invoke callbacks in timeout order': function(t) {
+            var i, order = [];
+            for (i=1; i<=40; i++) (function(i){ setTimeout(function(){ order.push(i); }, i); })(i);
+            setTimeout(function timeoutOrderDone(){
+                t.equal(order.length, 40);
+                for (i=0; i<order.length-1; i++) assert(order[i] < order[i+1]);
+                t.done();
+            }, 42);
+        },
+
+        'should not invoke callback if cleared': function(t) {
+            var zero = 0;
+            var ti = setTimeout(function callbackCleared(){ zero = 1; }, 1);
+            clearTimeout(ti);
+            setTimeout(function doneCallbackCleared(){ assert(zero === 0); t.done(); }, 2);
+        },
+
+        'should invoke callback with 1 argument': function(t) {
+            t.expect(2);
+            setTimeout(function(a1){
+                t.equal(arguments.length, 1);
+                t.equal(a1, 11);
+                t.done();
+            }, 1, 11);
+        },
+
+        'should invoke callback with 3 arguments': function(t) {
+            t.expect(4);
+            setTimeout(function(a1, a2, a3){
+                t.equal(arguments.length, 3);
+                t.equal(a1, 11);
+                t.equal(a2, 22);
+                t.equal(a3, 33);
+                t.done();
+            }, 1, 11, 22, 33);
+        },
+    },
+
+    'setInterval': {
+        'should return intervalObject': function(t) {
+            t.expect(2);
+            var int = setInterval(function(){ clearInterval(int); t.ok(1); t.done() }, 2);
+            t.equal('object', typeof int);
+        },
+
+        'should invoke callback': function(t) {
+            t.expect(1);
+            var int = setInterval(function(){ clearInterval(int); t.ok(1); t.done(); }, 1);
+        },
+
+        'should not invoke callback if cleared': function(t) {
+            t.expect(1);
+            var int = setInterval(function(){ clearInterval(int); t.ok(1); t.done(); }, 1);
+            clearInterval(int);
+            setTimeout(function(){ t.ok(1); t.done(); }, 1);
+        },
+
+        'should invoke callback multiple times': function(t) {
+            var ntimes = 0;
+            t.expect(1);
+            var int = setInterval(function(){ ntimes++; if (ntimes >= 10) { clearInterval(int); t.ok(1); t.done(); } }, 1);
+        },
     },
 };
