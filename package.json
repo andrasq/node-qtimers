@@ -1,6 +1,6 @@
 {
   "name": "qtimers",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "very fast setImmediate, setTimeout, etc replacements",
   "license": "Apache-2.0",
   "repository": {
@@ -16,7 +16,7 @@
     "node": "*"
   },
   "dependencies": {
-    "qheap": "1.0.2",
+    "qheap": "1.0.4",
     "qlist": "0.1.5"
   },
   "scripts": {

@@ -103,7 +103,6 @@ Arrange for fn() to be called after a delay of `ms` milliseconds and every
 Cancel the interval callback.
 
 ----------------
-
 The opaque timer objects returned by setTimeout and setInterval provide a
 method `unref()`.  Calling unref will prevent that timer from keeping the
 program running if there are no other events left pending.  The `ref()` method
@@ -120,7 +119,6 @@ Timeout timers deactivate when run; interval timers remain active until
 canceled.
 
 ----------------
-
 In addition, QTimers allows adjusting some internal parameters:
 
 ### setTimeout.MIN_TIMEOUT = 1
