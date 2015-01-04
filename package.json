@@ -16,7 +16,7 @@
     "node": "*"
   },
   "dependencies": {
-    "qheap": "1.0.0",
+    "qheap": "1.0.2",
     "qlist": "0.1.5"
   },
   "scripts": {
