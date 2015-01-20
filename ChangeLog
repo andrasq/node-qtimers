@@ -1,0 +1,25 @@
+1.0.7
+- document currentTimestamp
+
+1.0.6
+- export currentTimestamp()
+- bugfix: never shut down the timeoutTimer
+
+1.0.5
+- bugfix: use qlist@0.9.0
+
+1.0.3
+- use qheap@1.0.4 for speedup
+
+1.0.2
+- bugfix: use qheap@1.0.3
+- use qheap@1.0.0 for speedup
+
+1.0.1
+- refactor; speedup
+
+1.0.0
+- unit tests, Readme, refactor
+
+0.1.0
+- initial checkin
