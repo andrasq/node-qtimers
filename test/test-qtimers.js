@@ -1,3 +1,8 @@
+/**
+ * Copyright (C) 2015 Andras Radics
+ * Licensed under the Apache License, Version 2.0
+ */
+
 assert = require('assert');
 
 var timers = require('../index');
@@ -9,6 +14,19 @@ module.exports = {
         var json = require('../package.json');
         t.equal('qtimers', json.name);
         t.done();
+    },
+
+    'should expose currentTimestamp': function(t) {
+        // test the timer on the next tick, because loading sources
+        // already caused the timestamp to drift
+        function checkTimestamp() {
+            var t1 = timers.currentTimestamp();
+            var t2 = Date.now();
+            t.ok(Math.abs(t2 - t1) <= 1);
+        }
+        t.expect(20);
+        for (var i=1; i<=20; i++) setTimeout(checkTimestamp, i);
+        setTimeout(t.done, 21);
     },
 
     'setImmediate': {

@@ -161,13 +161,15 @@ functions is no worse than having multiple timers time out together.
 ### currentTimestamp( )
 
 returns the millisecond timestamp that setTimeout uses for checking which
-queued functions to call.  This timestamp is updated by an event timer before
-starting to process each timeout interval.  Each timeout and interval function
-that is run on that interval will see the same currentTimestamp(), however,
-and setImmediate functions will see the timestamp as it existed when the last
-timeout/interval function finished running.  Normally the timestamp will stay
-in sync with Date.now(), but long-running blocking functions could introduce a
-lag.
+queued functions to call and for scheduling setTimeout and setInterval
+callbacks.  The timestamp is updated by an event timer before starting to
+process each timeout interval.  Each timeout and interval function that is run
+on that interval will see the same currentTimestamp(); setImmediate functions
+will see the timestamp as it existed when the last timeout/interval function
+finished running.  Normally the timestamp will stay in sync with Date.now(),
+but long-running blocking functions could introduce a lag.  The timestamp
+tries to detect staleness by counting calls; after 100 reads it will reload
+the time.
 
 
 TODO
