@@ -144,17 +144,17 @@ Any remaining immediate callbacks will be handled after the event loop has
 been processed.
 
 The nodejs spec requires this to be 1, ie only one setImmediate call handled
-per loop.  With it set to 1, a QTimers setImmediate loop runs 90% faster than
+per loop.  With it set to 1, a QTimers setImmediate loop runs 85% faster than
 node-v0.10.29.
 
 However, many setImmediate calls are very short, and are strongly penalized by
 the spec.  The QTimer default is 10, which results in a large performance
-boost, up to 9x faster than nodejs; at 100 13x faster.
+boost, up to 9x faster than nodejs; at 100 16x faster.
 
 <!--
 Note that setting this value too low (or to 1) is a false optimization, since
 nodejs runs all setTimeout timers that expire together in one bunch without
-checking the event loop between calls.  Calling multiple setImmediate
+checking the event loop between each.  Calling multiple setImmediate
 functions is no worse than having multiple timers time out together.
 -->
 
