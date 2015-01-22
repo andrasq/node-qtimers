@@ -1,3 +1,6 @@
+1.1.1
+- speedup: ref/unref is slow, run an idleTimer alongside instead
+
 1.1.0
 - belated version bump
 
