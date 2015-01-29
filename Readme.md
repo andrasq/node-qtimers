@@ -67,8 +67,8 @@ Loop a million times, slowly:
         // node-v0.10.29:     14.4  sec
 
 
-Api
----
+Timer Calls
+-----------
 
 QTimers supports all the functionality provided by the node built-in.
 
@@ -102,7 +102,6 @@ Arrange for fn() to be called after a delay of `ms` milliseconds and every
 
 Cancel the interval callback.
 
-----------------
 The opaque timer objects returned by setTimeout and setInterval provide a
 method `unref()`.  Calling unref will prevent that timer from keeping the
 program running if there are no other events left pending.  The `ref()` method
@@ -118,7 +117,9 @@ Disable unref, do not exit the program as long as this timer is active.
 Timeout timers deactivate when run; interval timers remain active until
 canceled.
 
-----------------
+Timer Extras
+------------
+
 In addition, QTimers allows adjusting some internal parameters and provides
 additional functionality:
 
@@ -158,19 +159,29 @@ checking the event loop between each.  Calling multiple setImmediate
 functions is no worse than having multiple timers time out together.
 -->
 
+### uninstall( )
+
+When loaded, qtimers install themselves to replace the built-in timers
+functions.  This can be un-done with `uninstall()`.  It is safe to call
+`uninstall` more than once, but 
+
+### install( )
+
+Explicit call to install (or reinstall) qtimers as the timers package to use.
+It is safe to call `install` more than once.
+
 ### currentTimestamp( )
 
 returns the millisecond timestamp that setTimeout uses for checking which
 queued functions to call and for scheduling setTimeout and setInterval
-callbacks.  The timestamp is updated by an event timer before starting to
-process each timeout interval.  Each timeout and interval function that is run
-on that interval will see the same currentTimestamp(); setImmediate functions
-will see the timestamp as it existed when the last timeout/interval function
-finished running.  Normally the timestamp will stay in sync with Date.now(),
-but long-running blocking functions could introduce a lag.  The timestamp
-tries to detect staleness by counting calls; after 100 reads it will reload
-the time.
-
+callbacks.  The timestamp is updated by an event timer every millisecond
+before starting to process each timeout interval.  Each timeout and interval
+function that is run on the same timeout will see the same currentTimestamp();
+setImmediate functions will see the timestamp as it existed when the last
+timeout/interval function finished running.  Normally the timestamp will stay
+in sync with Date.now(), but long-running blocking functions could introduce a
+lag.  The timestamp is updated every millisecond while there is active work to
+do, and every 10 milliseconds when only unreferenced timers are left.
 
 TODO
 ----

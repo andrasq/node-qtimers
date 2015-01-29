@@ -16,6 +16,20 @@ module.exports = {
         t.done();
     },
 
+    'should expose globals': function(t) {
+        var calls = [
+            'setImmediate', 'clearImmediate',
+            'setTimeout', 'clearTimeout',
+            'setInterval', 'clearInterval',
+            'currentTimestamp',
+        ];
+        for (var i=0; i<calls.length; i++) {
+            t.ok(timers[calls[i]]);
+            t.ok(global[calls[i]], "missing global call " + calls[i]);
+        }
+        t.done();
+    },
+
     'should expose currentTimestamp': function(t) {
         // test the timer on the next tick, because loading sources
         // already caused the timestamp to drift

@@ -12,7 +12,8 @@ var existingCalls = {
     setTimeout: setTimeout,
     clearTimeout: clearTimeout,
     setInterval: setInterval,
-    clearInterval: clearInterval
+    clearInterval: clearInterval,
+    currentTimestamp: global.currentTimestamp,
 };
 
 module.exports.install = function( ) {
