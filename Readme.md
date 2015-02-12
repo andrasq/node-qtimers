@@ -78,7 +78,14 @@ Arrange for fn() to be called with the provided arguments after the current
 thread exits.  Returns an opaque immediateObject that can be used to cancel
 the call.  SetImmediate functions are run in the order added.  Up to
 `setImmediate.maxTickDepth` functions are run before checking the event loop
-(default 10, though the nodejs spec requires 1).
+(default 10).
+
+Note that node v0.10 ran only 1 immediate callback between checks of the event
+loop.  Node v0.12 runs all queued callbacks.  QTimers can mimic both these
+behaviors (set `maxTickDepth` below), but defaults to running a fixed count,
+regardless of whether queued already or queued by the immediate callback that
+just ran.  This affords control over the tradeoff between not starving events
+vs minimizing the immediate queue overhead, which is substantial.
 
 ### clearImmediate( immediateObject )
 
@@ -140,30 +147,45 @@ used instead.
 
 ### setImmediate.maxTickDepth = 10
 
-The number of immediate functions to call before returning to the event loop.
-Any remaining immediate callbacks will be handled after the event loop has
-been processed.
+The number of setImmediate callbacks to call before checking the event loop.
+Any callbacks not run will be handled after the event loop has been processed.
 
-The nodejs spec requires this to be 1, ie only one setImmediate call handled
-per loop.  With it set to 1, a QTimers setImmediate loop runs 85% faster than
-node-v0.10.29.
+QTimers runs immediate callbacks by count, not when queued.  The app can tune
+the number of callbacks to run at a time:  a fixed count (even those queued
+during the processing of the immediate queue), those already on the queue, or
+a fixed count more than already queued.
 
-However, many setImmediate calls are very short, and are strongly penalized by
-the spec.  The QTimer default is 10, which results in a large performance
-boost, up to 9x faster than nodejs; at 100 16x faster.
+The QTimers behavior is configured by setting maxTickDepth appropriately:
 
-<!--
-Note that setting this value too low (or to 1) is a false optimization, since
-nodejs runs all setTimeout timers that expire together in one bunch without
-checking the event loop between each.  Calling multiple setImmediate
-functions is no worse than having multiple timers time out together.
--->
+- v0.10 compatible: `maxTickDepth = 1` runs one immediate call at a time
+- v0.12 compatible: `maxTickDepth = 0` runs the whole immediate list
+- qtimers: `maxTickDepth = 10` runs 10 immediate calls at a time
+- qtimers hybrid: `maxTickDepth = -10` runs the whole immediate list + 10 additional calls
+
+QTimers has just one immediate list.  A call to setImmediate from inside an
+immediate function will append to same list currently being processed.  If the
+configured maxTickDepth is greater than the number of callbacks queued at the
+start of the processing loop, the loop will run some of the callbacks queued
+earlier during the loop.  Running just-queued callbacks can greatly speed up
+some code patterns, e.g. tail-recursive setImmediate.  A `maxTickDepth = 10`
+is 9 x faster than nodejs v0.10; ` = 100` is 16x faster.
+
+The nodejs v0.10 spec (Stability: 5, Locked) requires this to be 1, ie only
+one setImmediate call handled per loop.  With maxTickDepth = 1, a QTimers
+setImmediate loop is still 85% faster than node-v0.10.29.
+
+The nodejs v0.12 spec (Stability: 5, Locked) requires this to be the length of
+the immediate list, ie only the already queued immediate callbacks are run.
+
+Apparently "5, Locked" is not sufficient for the semantics not to change, but
+QTimers has a flexible implementation that can emulate both, and do so at a
+higher speed than the built in timers.js.
 
 ### uninstall( )
 
 When loaded, qtimers install themselves to replace the built-in timers
 functions.  This can be un-done with `uninstall()`.  It is safe to call
-`uninstall` more than once, but 
+`uninstall` more than once.
 
 ### install( )
 
@@ -190,3 +212,4 @@ TODO
 - tune setTimeout
 - track down why node-v0.11.13 is slower than v0.10.29
 - allow sub-millisecond resolution timeouts and intervals (1/10 ms, say)
+- maybe rename currentTimestamp() to getTimeoutTimestamp() ?
