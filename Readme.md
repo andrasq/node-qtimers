@@ -150,7 +150,7 @@ used instead.
 The number of setImmediate callbacks to call before checking the event loop.
 Any callbacks not run will be handled after the event loop has been processed.
 
-QTimers runs immediate callbacks by count, not when queued.  The app can tune
+QTimers runs immediate callbacks by count, not by when queued.  The app can tune
 the number of callbacks to run at a time:  a fixed count (even those queued
 during the processing of the immediate queue), those already on the queue, or
 a fixed count more than already queued.
@@ -164,22 +164,21 @@ The QTimers behavior is configured by setting maxTickDepth appropriately:
 
 QTimers has just one immediate list.  A call to setImmediate from inside an
 immediate function will append to same list currently being processed.  If the
-configured maxTickDepth is greater than the number of callbacks queued at the
-start of the processing loop, the loop will run some of the callbacks queued
-earlier during the loop.  Running just-queued callbacks can greatly speed up
-some code patterns, e.g. tail-recursive setImmediate.  A `maxTickDepth = 10`
-is 9 x faster than nodejs v0.10; ` = 100` is 16x faster.
+configured maxTickDepth is greater than length of the queue, the loop will run
+some callbacks added during the loop, too.  Running just-queued callbacks can
+greatly speed up some usage patterns, e.g. tail-recursive setImmediate.  A
+`maxTickDepth = 10` is 9 x faster than nodejs v0.10; ` = 100` is 16x faster.
 
-The nodejs v0.10 spec (Stability: 5, Locked) requires this to be 1, ie only
-one setImmediate call handled per loop.  With maxTickDepth = 1, a QTimers
+The nodejs v0.10 spec (Stability: 5, Locked) requires maxTickDepth to be 1, ie
+run only one setImmediate call per loop.  With maxTickDepth = 1, a QTimers
 setImmediate loop is still 85% faster than node-v0.10.29.
 
-The nodejs v0.12 spec (Stability: 5, Locked) requires this to be the length of
-the immediate list, ie only the already queued immediate callbacks are run.
+The nodejs v0.12 spec (Stability: 5, Locked) requires maxTickDepth to be 0,
+the length of the immediate list, ie run only the already queued immediate
+calls and no more.
 
-Apparently "5, Locked" is not sufficient for the semantics not to change, but
-QTimers has a flexible implementation that can emulate both, and do so at a
-higher speed than the built in timers.js.
+Apparently "5, Locked" is not sufficient for the semantics not to change.
+Configure QTimers to to match a flavor of the spec, or tune it for speed.
 
 ### uninstall( )
 
