@@ -8,11 +8,11 @@ QTimers uses faster internal data structures than the builtin nodejs
 timers.js, and (optionally) relaxes some nodejs limitations.  The speedups are
 from a combination of:
 
-- circular buffer for immediate tasks, not a linked list
-- allow better optimization (not passing `arguments` to array.slice)
-- special-case single-argument callbacks
-- allow multiple immediate calls before checking event loop
-- reuse timestamps as much as possible
+- fast circular buffer for immediate tasks, not a linked list
+- better v8 optimization (eg not passing `arguments` to array.slice)
+- fast-path single-argument callbacks too
+- multiple immediate calls before checking event loop
+- better reuse of timestamps
 
 Development was primarily with node-v0.10.29.  Actual runtimes vary, but
 comparable speedups were seen with node-v0.11.13, iojs-v0.11.15-pre and
@@ -194,16 +194,20 @@ It is safe to call `install` more than once.
 
 ### currentTimestamp( )
 
-returns the millisecond timestamp that setTimeout uses for checking which
-queued functions to call and for scheduling setTimeout and setInterval
-callbacks.  The timestamp is updated by an event timer every millisecond
-before starting to process each timeout interval.  Each timeout and interval
-function that is run on the same timeout will see the same currentTimestamp();
-setImmediate functions will see the timestamp as it existed when the last
-timeout/interval function finished running.  Normally the timestamp will stay
-in sync with Date.now(), but long-running blocking functions could introduce a
-lag.  The timestamp is updated every millisecond while there is active work to
-do, and every 10 milliseconds when only unreferenced timers are left.
+returns the millisecond timestamp that setTimeout uses internally.  This is a
+scheduling timestamp and not the current time of day, but unless there are lot
+of long-running blocking computations, the two should be the same.
+
+The timestamp is updated by an event timer every millisecond at the beginning
+and end of each timeout interval.  Each timeout function in that interval will
+see the same timestamp; setImmediate functions will see the timestamp set at
+the end of the last timeout interval.
+
+Normally the timestamp will stay in sync with Date.now(), but long-running
+blocking functions could introduce a lag.  The timestamp is updated every
+millisecond while there is active work to do, and every 10 milliseconds when
+only unreferenced timers are left.
+
 
 TODO
 ----
