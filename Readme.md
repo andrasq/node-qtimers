@@ -18,6 +18,11 @@ Development was primarily with node-v0.10.29.  Actual runtimes vary, but
 comparable speedups were seen with node-v0.11.13, iojs-v0.11.15-pre and
 iojs-v0.13-devel as well.
 
+In addition to being faster, qtimers invokes all timeouts in expiration order.
+Node v0.10.29 sometimes calls timeout functions out of sequence (calling a
+later function before the earlier), which can result in very subtle and
+hard-to-find glitches.
+
 
 Examples
 --------
