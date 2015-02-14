@@ -15,13 +15,14 @@ from a combination of:
 - better reuse of timestamps
 
 Development was primarily with node-v0.10.29.  Actual runtimes vary, but
-comparable speedups were seen with node-v0.11.13, iojs-v0.11.15-pre and
-iojs-v0.13-devel as well.
+substantial speedups were seen with node-v0.12, node-v0.11.13, and iojs
+as well.
 
-In addition to being faster, qtimers invokes all timeouts in expiration order.
-Node v0.10.29 sometimes calls timeout functions out of sequence (calling a
-later function before the earlier), which can result in very subtle and
-hard-to-find glitches.
+In addition to being faster, qtimers invokes all callbacks in a well-defined
+order:  immediates in queueing order and timeouts in expiration order.  Node
+v0.10.29 sometimes calls timeout functions out of sequence (running a later
+function before the earlier), which can result in very subtle and hard-to-find
+glitches.
 
 
 Examples
@@ -53,12 +54,11 @@ Loop a million times, quickly:
         // maxTickDepth = 10:  0.20 sec
         // maxTickDepth = 1:   0.91 sec
         // node-v0.10.29:      1.77 sec
-        // node-v0.11.13:      2.64 sec
+        // node-v0.12:         2.25 sec
 
 Loop a million times, less quickly:
 
         require('qtimers');
-        setImmediate.maxTickDepth = 1;
         function loop(nleft) { if (--nleft > 0) setImmediate(loop, nleft); }
         loop(1000000);
         // maxTickDepth = 100: 0.42 sec
@@ -70,6 +70,7 @@ Loop a million times, slowly:
         function loop(nleft) { if (--nleft > 0) setImmediate(loop, nleft); }
         loop(1000000);
         // node-v0.10.29:     14.4  sec
+        // node-v0.12:         3.4 sec
 
 
 Timer Calls
@@ -218,6 +219,6 @@ TODO
 
 - refactor into a singleton for better testability
 - tune setTimeout
-- track down why node-v0.11.13 is slower than v0.10.29
+- track down why node-v0.12 is slower than v0.10.29
 - allow sub-millisecond resolution timeouts and intervals (1/10 ms, say)
 - maybe rename currentTimestamp() to getTimeoutTimestamp() ?
