@@ -26,6 +26,8 @@
     "Andras",
     "quick",
     "fast",
+    "timers",
+    "timers.js",
     "setImmediate",
     "setTimeout",
     "setInterval"
