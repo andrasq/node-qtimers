@@ -222,3 +222,6 @@ TODO
 - track down why node-v0.12 is slower than v0.10.29
 - allow sub-millisecond resolution timeouts and intervals (1/10 ms, say)
 - maybe rename currentTimestamp() to getTimeoutTimestamp() ?
+- qtimers uses 0.75% cpu at idle (vm), see if can be reduced (create
+  interval threads on demand maybe?)  .0075 * 1e6 timer thread creations /
+  sec is 7500/sec, but need just 1 per ms
