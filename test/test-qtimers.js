@@ -40,7 +40,7 @@ module.exports = {
         }
         t.expect(20);
         for (var i=1; i<=20; i++) setTimeout(checkTimestamp, i);
-        setTimeout(t.done, 21);
+        setTimeout(function(){ t.done() }, 21);
     },
 
     'setImmediate': {
