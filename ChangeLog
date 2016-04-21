@@ -1,3 +1,10 @@
+1.4.5
+- fully switch to scheduleTimer() instead of timeoutTimer and idleTimer
+- test with qnit
+- accelerate up to 3 arguments
+- faster setTimeout
+- faster arguments transcription
+
 1.4.2
 - small speedup to timeout and interval timers
 - do not rely on array.shift() when processing timers
