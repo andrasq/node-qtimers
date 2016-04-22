@@ -84,7 +84,7 @@ Arrange for fn() to be called with the provided arguments after the current
 thread exits.  Returns an opaque immediateObject that can be used to cancel
 the call.  SetImmediate functions are run in the order added.  Up to
 `setImmediate.maxTickDepth` functions are run before checking the event loop
-(default 10).
+(default -10).
 
 Note that node v0.10 ran only 1 immediate callback between checks of the event
 loop.  Node v0.12 runs all queued callbacks.  QTimers can mimic both these
@@ -151,7 +151,7 @@ Note that setting MAX_TIMEOUT low is not the same as capping the delay:  if
 the timeout delay is outside the valid range, a delay of MIN_TIMEOUT (1 ms) is
 used instead.
 
-### setImmediate.maxTickDepth = 10
+### setImmediate.maxTickDepth = -10
 
 The number of setImmediate callbacks to call before checking the event loop.
 Any callbacks not run will be handled after the event loop has been processed.
@@ -166,7 +166,7 @@ The QTimers behavior is configured by setting maxTickDepth appropriately:
 - v0.10 compatible: `maxTickDepth = 1` runs one immediate call at a time
 - v0.12 compatible: `maxTickDepth = 0` runs the whole immediate list
 - qtimers: `maxTickDepth = 10` runs 10 immediate calls at a time
-- qtimers hybrid: `maxTickDepth = -10` runs the whole immediate list + 10 additional calls
+- qtimers hybrid: `maxTickDepth = -10` runs the whole immediate list + up to 10 newly queued calls
 
 QTimers has just one immediate list.  A call to setImmediate from inside an
 immediate function will append to same list currently being processed.  If the
@@ -185,6 +185,7 @@ calls and no more.
 
 Apparently "5, Locked" is not sufficient for the semantics not to change.
 Configure QTimers to to match a flavor of the spec, or tune it for speed.
+The default -10 is very fast on all versions of node.
 
 ### uninstall( )
 
