@@ -1,6 +1,6 @@
 {
   "name": "qtimers",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "description": "fast setImmediate, setTimeout, etc replacements",
   "license": "Apache-2.0",
   "repository": {
