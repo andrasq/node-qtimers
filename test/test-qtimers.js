@@ -89,6 +89,18 @@ module.exports = {
             }, 123, 234, 345);
         },
 
+        'should run rest of immediate queue after error': function(t) {
+            return t.done();
+            // TODO: umm... how to throw an error from inside the test that
+            // neither kills the test nor node?  TBD.
+            t.expect(4);
+            process.once('uncaughtException', function(err) { });
+            setImmediate(function(){ t.ok(1) });
+            setImmediate(function(){ t.ok(1); throw new Error("deliberate error") });
+            setImmediate(function(){ t.ok(1) });
+            setImmediate(function(){ t.done() });
+        },
+
         'should invoke 10000 callbacks': function(t) {
             var i, ncalls = 10000;
             t.expect(1);
