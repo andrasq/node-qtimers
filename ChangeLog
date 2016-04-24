@@ -1,3 +1,17 @@
+1.4.8
+
+- fix mis-keyed func name
+- upgrade to qheap 1.1.0 (speedup)
+- test with qnit 0.11.0
+
+1.4.7
+
+- huge speedup by saving callback arguments list in an array, not a closure
+
+1.4.6
+
+- task domain and error handling fixes
+
 1.4.5
 - fully switch to scheduleTimer() instead of timeoutTimer and idleTimer
 - test with qnit
