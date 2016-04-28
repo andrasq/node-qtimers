@@ -39,8 +39,8 @@ module.exports = {
             t.ok(Math.abs(t2 - t1) <= 1);
         }
         t.expect(20);
-        for (var i=1; i<=20; i++) setTimeout(checkTimestamp, i);
-        setTimeout(function(){ t.done() }, 21);
+        for (var i=1+5; i<=20+5; i++) setTimeout(checkTimestamp, i);
+        setTimeout(function(){ t.done() }, 25);
     },
 
     'setImmediate': {
@@ -188,7 +188,7 @@ module.exports = {
             t.expect(1);
             var int = setInterval(function(){ clearInterval(int); t.ok(1); t.done(); }, 1);
             clearInterval(int);
-            setTimeout(function(){ t.ok(1); t.done(); }, 1);
+            setTimeout(function(){ t.ok(1); t.done(); }, 10);
         },
 
         'should invoke callback multiple times': function(t) {
