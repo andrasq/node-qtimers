@@ -1,3 +1,9 @@
+1.4.10
+- string hash keys are faster than numbers
+- faster setImmediate for 1-2 args
+- faster callbacks via _runCallbackItem
+- upgrade qheap, qlist
+
 1.4.8
 
 - fix mis-keyed func name
